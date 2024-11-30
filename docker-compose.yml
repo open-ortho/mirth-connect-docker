@@ -16,6 +16,7 @@ services:
     container_name: mc-mirthconnect
     restart: on-failure
     volumes:
+      - "./mirth-connect/conf/log4j2.properties:/opt/mirth-connect/conf/log4j2.properties:rw"
       - "./mirth-connect/conf/mirth.properties:/opt/mirth-connect/conf/mirth.properties:rw"
       - "./data/mirth-connect/conf/dbdrivers.xml:/opt/mirth-connect/conf/dbdrivers.xml:rw"
       - "./data/mirth-connect/custom-lib/:/opt/mirth-connect/custom-lib/:ro"
