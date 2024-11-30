@@ -1,5 +1,3 @@
-version: '3'
-
 networks:
   frontend:
   backend:
@@ -8,6 +6,7 @@ volumes:
   mysql_db:
   mysql_log:
   nginx_log:
+  topsserver_data:
 
 services:
 
@@ -77,3 +76,23 @@ services:
       - "nginx_log:/var/log/nginx"
     networks:
       - backend
+
+  topsserver-mock:
+    container_name: mc-topsserver-mock
+    image: cr.medoco.health/medoco/tops-server-mock:latest
+    hostname: topsserver-mock
+    restart: no
+    environment:
+      POSTGRES_PASSWORD: example
+      PGHOST: /tmp # Emulating macOS installation with unix socket in /tmp. This will not set the server, but will be used by the scripts inside the container.
+    ports:
+      - "5432:5432"
+      - "2222:22"
+    networks:
+      - frontend
+    # volumes:
+      # !! For some unknown reason, you must use the actual PG_DATA folder,
+      # which, by default, is the data/ subfolder. If you map the parent
+      # postgresql folder, the docker will not persist, and it will save data
+      # inside the container instead of the volume
+      # - topsserver_data:/var/lib/postgresql/data
