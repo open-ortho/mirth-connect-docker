@@ -9,21 +9,32 @@ volumes:
   topsserver_data:
 
 services:
-
   mirth-connect:
-    build: mirth-connect
-    image: fabrom/mirth-connect
+    image: nextgenhealthcare/connect
+    platform: linux/amd64
     container_name: mc-mirthconnect
     restart: on-failure
-    volumes:
-      - "./mirth-connect/conf/log4j2.properties:/opt/mirth-connect/conf/log4j2.properties:rw"
-      - "./mirth-connect/conf/mirth.properties:/opt/mirth-connect/conf/mirth.properties:rw"
-      - "./data/mirth-connect/conf/dbdrivers.xml:/opt/mirth-connect/conf/dbdrivers.xml:rw"
-      - "./data/mirth-connect/custom-lib/:/opt/mirth-connect/custom-lib/:ro"
-      - "./data/mirth-connect/spools/:/var/spool/mirth/:rw"
+    environment:
+      - DATABASE=mysql
+      - DATABASE_URL=jdbc:mysql://mysql:3306/mirth-test
+      - DATABASE_MAX_CONNECTIONS=20
+      - DATABASE_USERNAME=mirth
+      - DATABASE_PASSWORD=password
+      - DATABASE_MAX_RETRY=2
+      - DATABASE_RETRY_WAIT=10000
+      - KEYSTORE_STOREPASS=docker_storepass
+      - KEYSTORE_KEYPASS=docker_keypass
+      - VMOPTIONS=-Xmx512m
     ports:
-      - "8080:8080"
-      - "8443:8443"
+      - 8080:8080/tcp
+      - 8443:8443/tcp
+      - 11112:11112/tcp
+    volumes:
+      - "./mirth-connect/conf/log4j2.properties:/opt/connect/conf/log4j2.properties:rw"
+      # - "./mirth-connect/conf/mirth.properties:/opt/connect/conf/mirth.properties:rw"
+      # - "./data/mirth-connect/conf/dbdrivers.xml:/opt/connect/conf/dbdrivers.xml:rw"
+      # - "./data/mirth-connect/custom-lib/:/opt/connect/custom-lib/:ro"
+      - "./data/mirth-connect/spools/:/var/spool/mirth/:rw"
     networks:
       - frontend
       - backend
